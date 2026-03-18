@@ -1,0 +1,138 @@
+# Dockerfile with VNC support for Windows compatibility
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for audio, GUI, VNC, and other requirements
+RUN apt-get update && apt-get install -y \
+    # Audio libraries
+    libasound2-dev \
+    portaudio19-dev \
+    libportaudio2 \
+    libportaudiocpp0 \
+    ffmpeg \
+    # GUI dependencies (tkinter)
+    python3-tk \
+    # VNC server and window manager
+    tigervnc-standalone-server \
+    tigervnc-common \
+    fluxbox \
+    xterm \
+    # Web-based VNC (noVNC) - install via pip
+    python3-pip \
+    # X11 utilities
+    x11-apps \
+    xauth \
+    # Build tools for some Python packages
+    build-essential \
+    gcc \
+    g++ \
+    # Network tools
+    wget \
+    curl \
+    # Cleanup
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    pygame>=2.5.0 \
+    sounddevice>=0.4.6 \
+    numpy>=1.24.0 \
+    pydub>=0.25.1 \
+    yt-dlp>=2023.12.30 \
+    soundcloud-lib>=0.5.3 \
+    requests>=2.31.0 \
+    pyaudio \
+    websockify
+
+# Install noVNC from GitHub
+RUN mkdir -p /opt/novnc && \
+    cd /opt && \
+    wget -q https://github.com/novnc/noVNC/archive/refs/heads/master.tar.gz && \
+    tar xzf master.tar.gz && \
+    mv noVNC-master/* novnc/ && \
+    mv noVNC-master/.* novnc/ 2>/dev/null || true && \
+    rmdir noVNC-master && \
+    rm master.tar.gz
+
+# Copy application files
+COPY . .
+
+# Set up VNC
+RUN mkdir -p /root/.vnc && \
+    echo "#!/bin/sh\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nfluxbox &\n" > /root/.vnc/xstartup && \
+    chmod +x /root/.vnc/xstartup && \
+    echo "" | vncpasswd -f > /root/.vnc/passwd 2>/dev/null || echo "" > /root/.vnc/passwd && \
+    chmod 600 /root/.vnc/passwd
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+export DISPLAY=:1\n\
+export USER=root\n\
+\n\
+# Start VNC server\n\
+echo "Starting VNC server on :1..."\n\
+Xvnc :1 -geometry 1024x768 -depth 24 -SecurityTypes None -localhost no -rfbport 5901 &\n\
+VNC_PID=$!\n\
+\n\
+# Wait for VNC to start\n\
+sleep 3\n\
+\n\
+# Start web-based VNC (noVNC) on port 6080\n\
+echo "Starting web VNC server on port 6080..."\n\
+websockify --web=/opt/novnc 6080 localhost:5901 > /tmp/websockify.log 2>&1 &\n\
+WEB_PID=$!\n\
+sleep 5\n\
+if kill -0 $WEB_PID 2>/dev/null; then\n\
+    echo "==========================================="\n\
+    echo "✅ Web VNC is ready!"\n\
+    echo "Open in your browser: http://localhost:6080/vnc.html"\n\
+    echo "Then click the Connect button (no password needed)"\n\
+    echo "==========================================="\n\
+else\n\
+    echo "⚠️  Web VNC failed to start. Check /tmp/websockify.log"\n\
+    cat /tmp/websockify.log 2>/dev/null || true\n\
+    echo "VNC client still works on localhost:5901"\n\
+fi\n\
+\n\
+# Start window manager\n\
+echo "Starting window manager..."\n\
+export DISPLAY=:1\n\
+fluxbox &\n\
+sleep 2\n\
+\n\
+# Start the application\n\
+echo "Starting Audio Sync GUI..."\n\
+cd /app\n\
+python audio_sync_gui.py &\n\
+APP_PID=$!\n\
+\n\
+echo "==========================================="\n\
+echo "✅ VNC Server is running!"\n\
+echo ""\n\
+echo "🌐 WEB BROWSER ACCESS (NO VNC CLIENT NEEDED):"\n\
+echo "  1. Open: http://localhost:6080/vnc.html"\n\
+echo "  2. Click 'Connect' button"\n\
+echo "  3. No password needed!"\n\
+echo ""\n\
+echo "Alternative: VNC Client on localhost:5901"\n\
+echo "==========================================="\n\
+\n\
+# Keep script running\n\
+wait\n\
+' > /app/start-vnc.sh && chmod +x /app/start-vnc.sh
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV DISPLAY=:1
+
+# Expose VNC ports
+EXPOSE 5901 6080
+
+# Run VNC server with the app
+CMD ["/app/start-vnc.sh"]

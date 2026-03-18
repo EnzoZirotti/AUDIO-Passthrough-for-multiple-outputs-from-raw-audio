@@ -1,0 +1,85 @@
+========================================
+BluetoothStreamer - Quick Start Guide
+========================================
+
+Thank you for downloading BluetoothStreamer!
+
+INSTALLATION
+------------
+1. Extract the ZIP file to a folder (e.g., C:\Program Files\BluetoothStreamer)
+2. Double-click BluetoothStreamer.exe to run
+
+No installation required! The application is portable.
+
+FIRST RUN
+---------
+1. The application will open with a tabbed interface
+2. Select your audio output devices from the dropdowns
+3. If using Bluetooth speakers, wait for latency measurement to complete
+
+PLAYING LOCAL FILES
+-------------------
+1. Go to "Local Files" tab
+2. Click "Browse Audio File"
+3. Select your music file (MP3, WAV, OGG, FLAC, M4A)
+4. Click "Play"
+
+STREAMING FROM SOUNDCLOUD
+-------------------------
+1. Go to "SoundCloud" tab
+2. Type a search query (song name, artist, keywords)
+3. Click "Search" or press Enter
+4. Double-click a track to play it
+
+TIP: You don't need the exact song name! The search is flexible.
+
+MULTI-DEVICE PLAYBACK
+---------------------
+To play audio to multiple devices simultaneously:
+
+1. Select Device 1 and Device 2 from the dropdowns
+2. The app will automatically measure latency for each device
+3. If devices are out of sync, adjust the latency sliders
+4. Click "Play" to start synchronized playback
+
+LATENCY ADJUSTMENT
+------------------
+- Each device has a latency adjustment control (in milliseconds)
+- Latency is automatically measured when you select a device
+- If devices are out of sync, manually adjust:
+  * Positive values delay the device
+  * Negative values advance the device
+  * Start with small adjustments (10-50ms)
+
+TROUBLESHOOTING
+---------------
+Problem: No audio playing
+Solution: 
+- Check that your audio devices are connected
+- Make sure volume is not muted
+- Try selecting a different audio device
+
+Problem: SoundCloud search not working
+Solution:
+- Check your internet connection
+- Some tracks may be unavailable
+- Try different search terms
+
+Problem: Devices are out of sync
+Solution:
+- Wait for automatic latency measurement to complete
+- Use the latency adjustment controls
+- For Bluetooth devices, typical latency is 100-200ms
+
+Problem: Application won't start
+Solution:
+- Make sure you extracted all files from the ZIP
+- Try running as Administrator
+- Check Windows Defender isn't blocking it
+
+SUPPORT
+-------
+For more help, see README.md included in this package.
+
+Enjoy your music!
+

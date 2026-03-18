@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  audio-app-vnc:
+    build:
+      context: .
+      dockerfile: Dockerfile.vnc
+    container_name: audio-sync-gui-vnc
+    image: audio-sync-gui-vnc:latest
+    ports:
+      - "5901:5901"  # VNC port (for VNC clients)
+      - "6080:6080"  # Web VNC port (for web browser)
+    environment:
+      - DISPLAY=:1
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount audio devices (Linux)
+      - /dev/snd:/dev/snd:rw
+      # Optional: Mount a directory for audio files
+      - ./audio_files:/app/audio_files:ro
+    # For audio device access
+    privileged: true
+    stdin_open: true
+    tty: true

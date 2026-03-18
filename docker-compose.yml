@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  audio-app:
+    build: .
+    container_name: audio-sync-gui
+    image: audio-sync-gui:latest
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount X11 socket for GUI (Linux)
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # Mount audio devices (Linux)
+      - /dev/snd:/dev/snd:rw
+      # Optional: Mount a directory for audio files
+      - ./audio_files:/app/audio_files:ro
+    network_mode: host
+    # For audio device access
+    privileged: true
+    # Alternative: use device cgroup rules instead of privileged
+    # devices:
+    #   - /dev/snd:/dev/snd
+    stdin_open: true
+    tty: true

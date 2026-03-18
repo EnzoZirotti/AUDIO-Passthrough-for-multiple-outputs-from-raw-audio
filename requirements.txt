@@ -1,0 +1,10 @@
+pygame-ce>=2.5.0
+sounddevice>=0.4.6
+numpy>=1.24.0
+pydub>=0.25.1
+yt-dlp>=2023.12.30
+soundcloud-lib>=0.5.3
+requests>=2.31.0
+PyAudioWPatch>=0.2.12.3
+pycaw>=20230407; sys_platform == "win32"
+comtypes>=1.1.14; sys_platform == "win32"

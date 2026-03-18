@@ -1,0 +1,72 @@
+========================================
+BluetoothStreamer - Build Instructions
+========================================
+
+QUICK BUILD (Recommended)
+--------------------------
+1. Double-click: build_distribution.bat
+2. Wait for build to complete
+3. Find executable in: dist\BluetoothStreamer\BluetoothStreamer.exe
+
+That's it! The script handles everything automatically.
+
+MANUAL BUILD STEPS
+------------------
+If you prefer to build manually:
+
+1. Install PyInstaller:
+   pip install pyinstaller
+
+2. Install dependencies:
+   pip install -r requirements.txt
+
+3. Build executable:
+   pyinstaller --clean --noconfirm bluetoothstreamer.spec
+
+4. Find executable in: dist\BluetoothStreamer.exe
+
+CREATING A ZIP FOR DISTRIBUTION
+--------------------------------
+After building:
+
+1. Run: create_zip.bat
+   OR
+2. Manually zip the dist\BluetoothStreamer folder
+
+CREATING AN INSTALLER
+---------------------
+1. Install Inno Setup from: https://jrsoftware.org/isinfo.php
+
+2. Open create_installer.iss in Inno Setup
+
+3. Modify if needed:
+   - AppPublisher name
+   - URLs
+   - Icon path (if you have an icon)
+
+4. Compile the installer (F9 or Build menu)
+
+5. Find installer in: installer\BluetoothStreamer-Setup.exe
+
+TROUBLESHOOTING
+---------------
+Problem: "Python is not recognized"
+Solution: Add Python to your PATH or use full path to python.exe
+
+Problem: "Failed to build executable"
+Solution: 
+- Make sure all dependencies are installed
+- Check PyInstaller is installed: pip install pyinstaller
+- Try building with console=True in spec file to see errors
+
+Problem: Executable is very large (50-200MB)
+Solution: This is normal! PyInstaller bundles Python and all libraries.
+
+Problem: Executable won't run on another computer
+Solution:
+- Make sure target computer has Windows 7 or later
+- May need Visual C++ Redistributable (usually already installed)
+- Test on a clean system first
+
+For more details, see DISTRIBUTION.md
+
